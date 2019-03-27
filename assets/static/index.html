@@ -1,0 +1,63 @@
+<html>
+<head>
+
+    <style>
+        #error {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+<h1>Hello, World!</h1>
+
+<pre id="error"></pre>
+<pre id="output"></pre>
+
+<script>
+let targets = {
+    output: document.getElementById('output'),
+    error: document.getElementById('error')
+}
+
+function appendTo(id, ...args) {
+    for (s of args) {
+        targets[id].innerHTML += s
+        if (s.charAt === undefined || s.charAt(s.length - 1) != "\n") {
+            targets[id].innerHTML += "\n"
+        }
+    }
+}
+
+function print(...lines) {
+    appendTo('output', ...lines)
+}
+
+function error(...lines) {
+    appendTo('error', ...lines.map(m => typeof(m) === "Error" ? m.message.toString() : m ))
+}
+
+function printData(url) {
+    fetch(url)
+    .then(res => {
+        if (res.ok) {
+            return res.text();
+        }
+        throw new Error("Oops")
+    })
+    .then(txt => print(txt))
+    .catch(e => error(e))
+}
+
+print("Output Stream", "===============")
+error("Error Stream", "===============")
+
+for (u of [ "/version", "/args", "/wrong" ]) {
+    printData(u)
+}
+
+</script>
+
+</body>
+</html>
+
